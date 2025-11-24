@@ -24,10 +24,6 @@ const COLLECTION = process.env.COLLECTION;
 const client = new MongoClient(MONGO_URI);
 const db = client.db(DBNAME);
 
-app.get("/name", (req, res) => {
-    res.send("My name is rebecca")
-});
-
 // GET all contacts
 app.get("/contacts", async (req, res) => {
     try {
@@ -35,13 +31,17 @@ app.get("/contacts", async (req, res) => {
         console.log("Node connected successfully to GET MongoDB");
 
         const query = {};
-        const results = await db.collection(collection).find(query).limit(100).toArray();
+        const results = await db.collection(COLLECTION).find(query).limit(100).toArray();
 
         res.status(200).json(results);
     } catch (err) {
         console.error(err);
         res.status(500).send("Error retrieving contacts");
     }
+});
+
+app.get("/name", (req, res) => {
+    res.send("My name is rebecca")
 });
 
 // GET one contact by name
@@ -52,7 +52,7 @@ app.get("/contacts/:name", async (req, res) => {
 
         const contactName = req.params.name;
         const query = { contact_name: contactName };
-        const result = await db.collection(collection).findOne(query);
+        const result = await db.collection(COLLECTION).findOne(query);
 
         if (!result) {
             res.status(404).send("Not Found");
@@ -83,7 +83,7 @@ app.post("/contacts", async (req, res) => {
         console.log("Node connected successfully to POST MongoDB");
 
         // Reference collection
-        const contactsCollection = db.collection(collection);
+        const contactsCollection = db.collection(COLLECTION);
 
         // Check if contact already exists
         const existingContact = await contactsCollection.findOne({
@@ -132,7 +132,7 @@ app.delete("/contacts/:name", async (req, res) => {
         await client.connect();
         console.log("Node connected successfully to POST MongoDB");
         // Reference collection
-        const contactsCollection = db.collection(collection);
+        const contactsCollection = db.collection(COLLECTION);
         // Check if contact already exists
         const existingContact = await contactsCollection.findOne({
             contact_name: name,
@@ -168,7 +168,7 @@ app.post("/contacts/update", async (req, res) => {
             return res.status(400).json({ message: "old_name is required." });
         }
 
-        const contactsCollection = db.collection(collection);
+        const contactsCollection = db.collection(COLLECTION);
 
         // Check if existing contact exists
         const existing = await contactsCollection.findOne({ contact_name: old_name });
@@ -208,4 +208,3 @@ app.post("/contacts/update", async (req, res) => {
 app.listen(PORT, HOST, () => {
     console.log(`Server running at http://${HOST}:${PORT}`);
 });
-
