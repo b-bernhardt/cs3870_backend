@@ -24,6 +24,10 @@ const COLLECTION = process.env.COLLECTION;
 const client = new MongoClient(MONGO_URI);
 const db = client.db(DBNAME);
 
+app.get("/name", (req, res) => {
+    res.send("My name is rebecca")
+});
+
 // GET all contacts
 app.get("/contacts", async (req, res) => {
     try {
@@ -204,3 +208,4 @@ app.post("/contacts/update", async (req, res) => {
 app.listen(PORT, HOST, () => {
     console.log(`Server running at http://${HOST}:${PORT}`);
 });
+
